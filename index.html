@@ -1,1 +1,252 @@
-default
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MOOCS</title>
+  <meta charset="utf-8">
+  <meta name="description" content="MOOCS">
+  <meta name="author" content="Layale Matta">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight/css/default.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/coursera_logo.png">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>MOOCS</h1>
+    <h2>How do courses break down among universities on Coursera?</h2>
+    <p>Layale Matta<br/>February 21, 2015</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Taking the Pulse of MOOCs</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Coursera is a technology platform that kickstarted the current MOOCs boom.</li>
+<li>And it still remains one of the leading companies between MOOCs players now. </li>
+<li>Like many websites these days, Coursera offers its data through REST APIs.</li>
+<li>Coursera offers a number of its Catalog APIs, available without OAuth authentication.</li>
+<li>We can find out the details of courses offered by Coursera with these APIs.
+
+<ul>
+<li><em>Courses:</em> <a href="https://api.coursera.org/api/catalog.v1/courses">https://api.coursera.org/api/catalog.v1/courses</a></li>
+<li><em>Categories:</em> <a href="https://api.coursera.org/api/catalog.v1/categories">https://api.coursera.org/api/catalog.v1/categories</a></li>
+<li><em>Universities:</em> <a href="https://api.coursera.org/api/catalog.v1/universities">https://api.coursera.org/api/catalog.v1/universities</a><br>
+<br><br></li>
+</ul></li>
+<li>We can try to answer questions like:
+
+<ul>
+<li>How do courses break down among universities on Coursera?</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>JSON Parsing in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>JSON is a very common data format for REST APIs.</li>
+<li>And Coursera&#39;s APIs also returns results in JSON format.</li>
+<li>I have cleaned the data and saved it in the file &quot;courses.json&quot;.</li>
+<li>Let&#39;s try parsing Coursera APIs:</li>
+</ul>
+
+<pre><code class="r">library(jsonlite)
+courses = fromJSON(paste(&quot;[&quot;,paste(readLines(&quot;courses.json&quot;),collapse=&quot;,&quot;),&quot;]&quot;))
+courses &lt;- courses[order(courses$id),]
+rownames(courses) &lt;- NULL
+</code></pre>
+
+<ul>
+<li>This library &quot;jsonlite&quot; returns the JSON response as a list of data frames.</li>
+<li>We need to plot the ratio of courses per category in order to see the relative representation of academic disciplines on Coursera. A course can belong to multiple categories, and in such cases a count is split equally across the included categories. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Creating the datasets</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>The steps I made to create my datasets:
+
+<ul>
+<li>get the count of categories by university</li>
+<li>segment the universities by number of courses</li>
+<li>get the ranking of categories by number of courses</li>
+<li>get the ratio of courses by category</li>
+</ul></li>
+</ul>
+
+<pre><code class="r">library(pander)
+univ &lt;- read.csv(&quot;coursera-univ.csv&quot;)
+pander(head(univ), style = &#39;rmarkdown&#39;, split.cells = Inf)
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="center">id</th>
+<th align="center">shortName</th>
+<th align="center">stem</th>
+<th align="center">notstem</th>
+<th align="center">courses</th>
+<th align="center">ratio</th>
+<th align="center">year</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="center">1</td>
+<td align="center">&#39;stanford&#39;</td>
+<td align="center">25</td>
+<td align="center">6</td>
+<td align="center">31</td>
+<td align="center">0.8065</td>
+<td align="center">2012</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">&#39;umich&#39;</td>
+<td align="center">8</td>
+<td align="center">7</td>
+<td align="center">15</td>
+<td align="center">0.5333</td>
+<td align="center">2012</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">&#39;princeton&#39;</td>
+<td align="center">9</td>
+<td align="center">5</td>
+<td align="center">14</td>
+<td align="center">0.6429</td>
+<td align="center">2012</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">&#39;penn&#39;</td>
+<td align="center">16</td>
+<td align="center">18</td>
+<td align="center">34</td>
+<td align="center">0.4706</td>
+<td align="center">2012</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td align="center">&#39;duke&#39;</td>
+<td align="center">14</td>
+<td align="center">12</td>
+<td align="center">26</td>
+<td align="center">0.5385</td>
+<td align="center">2012</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">&#39;jhu&#39;</td>
+<td align="center">16</td>
+<td align="center">19</td>
+<td align="center">35</td>
+<td align="center">0.4571</td>
+<td align="center">2012</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Summary</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>It looks like there was more STEM bias among the early adopters (universities with a lot of courses) but new entrants (universities with fewer courses) tend to have more non-STEM courses. Categories like Social Sciences, Humanities, Business and Management, Education, Teacher Professioal Development, Music, Film and Audio are on the rise.</li>
+<li>Why do we see this non-STEM shift? There are a number of possible explanations: </li>
+<li>In the beginning, Coursera courses relied on autograders. They were well suited for quantitative STEM subjects, but not for non-STEM subjects. </li>
+<li>Later, Coursera introduced a crowd sourced essay grading system that can be used across multiple courses. This led to rapid expansion of course offerings and made non-STEM subjects viable. </li>
+<li>There are no strict prerequisites for Coursera courses, but the bar is still high for STEM courses. Therefore it is quite possible that the potential market size is larger for non-STEM subjects.</li>
+<li>You can check this plot implemented at <a href="http://yalisme.shinyapps.io/MoocShiny/">http://yalisme.shinyapps.io/MoocShiny/</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Taking the Pulse of MOOCs'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='JSON Parsing in R'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Creating the datasets'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Summary'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+   
+  </html>
